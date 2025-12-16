@@ -73,9 +73,15 @@ export async function GET(request: NextRequest) {
     try {
       const botWebhookUrl = process.env.BOT_WEBHOOK_URL;
       
-      if (!botWebhookUrl || botWebhookUrl.includes('localhost') || botWebhookUrl.includes('127.0.0.1')) {
-        console.warn('⚠️ BOT_WEBHOOK_URL not configured or is localhost. Skipping DM notification.');
-        console.warn('⚠️ Set BOT_WEBHOOK_URL in Vercel environment variables to enable DM notifications.');
+      // Skip webhook if not configured properly
+      if (!botWebhookUrl || 
+          botWebhookUrl.includes('localhost') || 
+          botWebhookUrl.includes('127.0.0.1') ||
+          botWebhookUrl.includes('0.0.0.0') ||
+          botWebhookUrl.includes('YOUR_BOT_SERVER_IP')) {
+        console.warn('⚠️ BOT_WEBHOOK_URL not configured properly. Skipping DM notification.');
+        console.warn('⚠️ Current value:', botWebhookUrl);
+        console.warn('⚠️ Please set BOT_WEBHOOK_URL in Vercel to your bot\'s public URL.');
         console.warn(`⚠️ User ${discordId} connected successfully but won't receive a DM.`);
       } else {
         await axios.post(`${botWebhookUrl}/webhook/spotify-connected`, {
@@ -84,7 +90,7 @@ export async function GET(request: NextRequest) {
           spotify_image: spotifyUser.images?.[0]?.url || null,
           discord_username: discordUsername
         }, {
-          timeout: 5000, // 5 second timeout
+          timeout: 5000,
           headers: {
             'Content-Type': 'application/json'
           }
@@ -98,6 +104,7 @@ export async function GET(request: NextRequest) {
         code: error.code,
         url: process.env.BOT_WEBHOOK_URL
       });
+      console.error('💡 Make sure your bot server is running and BOT_WEBHOOK_URL is set to a publicly accessible URL');
       // Don't fail the connection if webhook fails
     }
 
