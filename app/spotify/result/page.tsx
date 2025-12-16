@@ -1,10 +1,10 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import Link from 'next/link';
 
-export default function SpotifyResult() {
+function ResultContent() {
   const searchParams = useSearchParams();
   const status = searchParams.get('status');
   const message = searchParams.get('message');
@@ -53,5 +53,17 @@ export default function SpotifyResult() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SpotifyResult() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    }>
+      <ResultContent />
+    </Suspense>
   );
 }
