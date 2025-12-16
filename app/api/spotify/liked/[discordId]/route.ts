@@ -27,6 +27,7 @@ export async function GET(
       name: item.track.name,
       artist: item.track.artists[0].name,
       uri: item.track.uri,
+      url: item.track.external_urls?.spotify || '',
       added_at: item.added_at
     }));
 
