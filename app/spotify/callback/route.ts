@@ -71,18 +71,33 @@ export async function GET(request: NextRequest) {
 
     // Send success webhook to Discord bot (for DM notification)
     try {
-      const botWebhookUrl = process.env.BOT_WEBHOOK_URL || 'http://localhost:3001';
-      await axios.post(`${botWebhookUrl}/webhook/spotify-connected`, {
-        discord_id: discordId,
-        spotify_user: spotifyUser.display_name || spotifyUser.id,
-        spotify_image: spotifyUser.images?.[0]?.url || null,
-        discord_username: discordUsername
-      }, {
-        timeout: 5000 // 5 second timeout
-      });
-      console.log(`✅ Sent notification webhook for user ${discordId}`);
+      const botWebhookUrl = process.env.BOT_WEBHOOK_URL;
+      
+      if (!botWebhookUrl || botWebhookUrl.includes('localhost') || botWebhookUrl.includes('127.0.0.1')) {
+        console.warn('⚠️ BOT_WEBHOOK_URL not configured or is localhost. Skipping DM notification.');
+        console.warn('⚠️ Set BOT_WEBHOOK_URL in Vercel environment variables to enable DM notifications.');
+        console.warn(`⚠️ User ${discordId} connected successfully but won't receive a DM.`);
+      } else {
+        await axios.post(`${botWebhookUrl}/webhook/spotify-connected`, {
+          discord_id: discordId,
+          spotify_user: spotifyUser.display_name || spotifyUser.id,
+          spotify_image: spotifyUser.images?.[0]?.url || null,
+          discord_username: discordUsername
+        }, {
+          timeout: 5000, // 5 second timeout
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        console.log(`✅ Sent notification webhook for user ${discordId} to ${botWebhookUrl}`);
+      }
     } catch (webhookError) {
-      console.error('Failed to send notification webhook:', webhookError);
+      const error = webhookError as any;
+      console.error('❌ Failed to send notification webhook:', {
+        message: error.message,
+        code: error.code,
+        url: process.env.BOT_WEBHOOK_URL
+      });
       // Don't fail the connection if webhook fails
     }
 
