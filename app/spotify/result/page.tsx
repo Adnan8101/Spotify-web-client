@@ -18,6 +18,11 @@ function ResultContent() {
     }
   }, [status]);
 
+  useEffect(() => {
+    // Debug logging
+    console.log('Result page loaded:', { status, message, spotifyUser });
+  }, [status, message, spotifyUser]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black flex items-center justify-center p-4">
       <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-12 max-w-md w-full text-center backdrop-blur-sm">
@@ -45,7 +50,13 @@ function ResultContent() {
               </svg>
             </div>
             <h1 className="text-3xl font-bold text-white mb-4">Connection Failed</h1>
-            <p className="text-zinc-400 mb-6">{message || 'An error occurred'}</p>
+            <p className="text-zinc-400 mb-2">{message || 'An error occurred'}</p>
+            <details className="text-left mb-6 text-xs text-zinc-600">
+              <summary className="cursor-pointer hover:text-zinc-400 text-center">Debug Info</summary>
+              <pre className="mt-2 p-3 bg-zinc-950 rounded overflow-auto">
+                {JSON.stringify({ status, message, spotifyUser, timestamp: new Date().toISOString() }, null, 2)}
+              </pre>
+            </details>
             <Link href="/" className="inline-block px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full font-semibold hover:opacity-90 transition-opacity">
               Back to Home
             </Link>

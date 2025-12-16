@@ -75,8 +75,9 @@ export async function GET(request: NextRequest) {
 
   } catch (err) {
     console.error('OAuth error:', err);
+    const errorMessage = err instanceof Error ? err.message : 'Connection failed';
     return NextResponse.redirect(
-      new URL('/spotify/result?status=error&message=Connection%20failed', request.url)
+      new URL(`/spotify/result?status=error&message=${encodeURIComponent(errorMessage)}`, request.url)
     );
   }
 }
