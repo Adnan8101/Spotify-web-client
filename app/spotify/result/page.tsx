@@ -2,6 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
+import Link from 'next/link';
 
 export default function SpotifyResult() {
   const searchParams = useSearchParams();
@@ -45,9 +46,9 @@ export default function SpotifyResult() {
             </div>
             <h1 className="text-3xl font-bold text-white mb-4">Connection Failed</h1>
             <p className="text-zinc-400 mb-6">{message || 'An error occurred'}</p>
-            <a href="/" className="inline-block px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full font-semibold hover:opacity-90 transition-opacity">
+            <Link href="/" className="inline-block px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full font-semibold hover:opacity-90 transition-opacity">
               Back to Home
-            </a>
+            </Link>
           </>
         )}
       </div>

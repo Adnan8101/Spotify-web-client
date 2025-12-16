@@ -20,7 +20,7 @@ export async function GET(
     } else {
       return NextResponse.json({ connected: false });
     }
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ connected: false, error: 'Database error' }, { status: 500 });
   }
 }

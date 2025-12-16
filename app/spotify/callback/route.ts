@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
       new URL(`/spotify/result?status=success&spotify_user=${encodeURIComponent(spotifyUser.display_name || spotifyUser.id)}`, request.url)
     );
 
-  } catch (err: any) {
+  } catch (err) {
     console.error('OAuth error:', err);
     return NextResponse.redirect(
       new URL('/spotify/result?status=error&message=Connection%20failed', request.url)
