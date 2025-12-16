@@ -71,12 +71,16 @@ export async function GET(request: NextRequest) {
 
     // Send success webhook to Discord bot (for DM notification)
     try {
-      await axios.post(`${process.env.BASE_URL}/api/spotify/notify`, {
+      const botWebhookUrl = process.env.BOT_WEBHOOK_URL || 'http://localhost:3001';
+      await axios.post(`${botWebhookUrl}/webhook/spotify-connected`, {
         discord_id: discordId,
         spotify_user: spotifyUser.display_name || spotifyUser.id,
         spotify_image: spotifyUser.images?.[0]?.url || null,
         discord_username: discordUsername
+      }, {
+        timeout: 5000 // 5 second timeout
       });
+      console.log(`✅ Sent notification webhook for user ${discordId}`);
     } catch (webhookError) {
       console.error('Failed to send notification webhook:', webhookError);
       // Don't fail the connection if webhook fails
