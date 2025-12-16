@@ -69,6 +69,19 @@ export async function GET(request: NextRequest) {
     cookieStore.delete('discord_username');
     cookieStore.delete('discord_avatar');
 
+    // Send success webhook to Discord bot (for DM notification)
+    try {
+      await axios.post(`${process.env.BASE_URL}/api/spotify/notify`, {
+        discord_id: discordId,
+        spotify_user: spotifyUser.display_name || spotifyUser.id,
+        spotify_image: spotifyUser.images?.[0]?.url || null,
+        discord_username: discordUsername
+      });
+    } catch (webhookError) {
+      console.error('Failed to send notification webhook:', webhookError);
+      // Don't fail the connection if webhook fails
+    }
+
     return NextResponse.redirect(
       new URL(`/spotify/result?status=success&spotify_user=${encodeURIComponent(spotifyUser.display_name || spotifyUser.id)}`, request.url)
     );
